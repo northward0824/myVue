@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="vue.js"></script>
+    <style>
+        body{
+            padding-top: 50px;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .el{
+            width: 400px;
+            height: auto;
+            border: 1px solid #999999;
+            margin: 0 auto;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+        .el>input{
+            width:100%;
+            border: 1px solid  #3c3c3c;
+            /*outline: 1px solid #3c3c3c;*/
+            height: 30px;
+        }
+        .el .top{
+            overflow: hidden;
+            border-bottom: 1px solid #9d9d9d;
+        }
+        .el .top span{
+            display: block;
+            float: right;
+            border: 1px solid #8c8c8c;
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 14px;
+            margin: 10px 10px;
+            cursor: pointer;
+        }
+        li{
+            padding: 20px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            height: auto;
+            /*border-bottom: 1px solid #999999;*/
+        }
+        li span:first-child{
+            display: block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid #999999;
+            float: left;
+            margin-right: 10px;
+        }
+        li span:nth-child(2){
+            font-size: 14px;
+            color: #3c3c3c;
+            float: left;
+            line-height: 14px;
+        }
+        li span:nth-child(3){
+            display: block;
+            float: right;
+            border: 1px solid #8c8c8c;
+            border-radius: 5px;
+            padding: 8px 6px;
+            font-size: 12px;
+            line-height: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+        .red{
+            background: #761c19;
+            color: white;
+        }
+        .hidden{
+            width: 100%;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="el">
+        <input type="text" @keyup.13="add" v-model="con" v-focus>
+        <div class="top">
+            <span @click="changeStatus('all')" :class="{red:status=='all'}">全部</span>
+            <span @click="changeStatus(1)" :class="{red:status==1}">完成</span>
+            <span @click="changeStatus(0)" :class="{red:status==0}">未完成</span>
+        </div>
+        <ul>
+            <li v-for="item in filter">
+                <div v-if="item.edit == false" @dblclick="edit(item)">
+                    <span @click="changeStatu(item)" :class="{red:item.statu==1}"></span>
+                    <span>{{item.value}}</span>
+                    <span @click="del(item)">删除</span>
+                </div>
+                <div v-else>
+                    <input type="text" class="hidden" v-model="item.value" @blur="edit(item)">
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</body>
+</html>
+<script>
+    ///////自定义指令的创建//////////
+    Vue.directive("focus",{
+        inserted:function (val) {
+            console.log(val)    /*val中存储了所有使用这个指令的页面元素 */
+            val.focus();
+        }
+    });
+    new Vue({
+        el:".el",
+        data:{
+            con:"",
+            all:localStorage.data? JSON.parse(localStorage.data):[],
+            status:"all"
+        },
+        methods:{
+            add(){
+                if(this.con.length == 0){
+                    alert("请输入有效字符！");
+                    return;
+                }
+                var obj = {};
+                obj.value = this.con;
+                obj.id = Math.random()+new Date().getTime();
+                obj.statu = 0;
+                obj.edit = false;
+                this.all.push(obj);
+                localStorage.data = JSON.stringify(this.all);
+                this.con = "";
+            },
+            changeStatus(val){
+                this.status = val;
+            },
+            changeStatu(item){
+               item.statu = 0 ? 0 : 1;
+                localStorage.data = JSON.stringify(this.all);
+            },
+            edit(item){
+                item.edit = !item.edit;
+                localStorage.data = JSON.stringify(this.all);
+            },
+            del(item){
+                this.all = this.all.filter((ele)=>{
+                    return item.id != ele.id;
+                });
+                localStorage.data = JSON.stringify(this.all);
+            }
+        },
+        computed:{
+            filter(){
+                return this.all.filter( (ele)=> {
+                    if(this.status == "all"){
+                        return ele;
+                    }
+                     else{
+                        return this.status == ele.statu;
+                    }
+                })
+            }
+        }
+    })
+    localStorage.a = [{'id':'0','name':'hah'}];
+</script>

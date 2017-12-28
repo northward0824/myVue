@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+    <link rel="stylesheet" href="app.css">
+
+</head>
+<script src="component.js"></script>
+
+<body>
+    <div id="el">
+        <!--@event自定义事件：changeStatus在实例对象中改变status
+                              change在实例对象中改变con-->
+        <!--这个组件获取实例对象中的this.con来改变input的值-->
+        <myinput @event="changeStatus" :con="con"></myinput>
+        <!--这个组件通过判断实例对象中的this.status来判断他是否显示-->
+        <myselect :list-data="datas" :status="status" @event="change"></myselect>
+    </div>
+    <script src="app.js"></script>
+
+</body>
+</html>
